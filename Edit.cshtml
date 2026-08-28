@@ -1,0 +1,87 @@
+@model Product
+@{
+    ViewData["Title"] = "Edit Product";
+    var categories = ViewBag.Categories as List<Category>;
+}
+
+<div class="container">
+    <div class="auth-wrap wide">
+        <h2>Edit Product</h2>
+
+        <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+        <form asp-action="Edit" asp-route-id="@Model.ProductId" method="post" enctype="multipart/form-data" novalidate>
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="ProductId" />
+            <input type="hidden" asp-for="ImagePath" />
+
+            @if (!string.IsNullOrEmpty(Model.ImagePath))
+            {
+                <div class="form-group">
+                    <label>Current Image</label>
+                    <div><img src="@Model.ImagePath" alt="@Model.ProductName" style="max-width:160px; max-height:160px; border-radius:var(--radius); box-shadow:var(--shadow-sm); display:block;" /></div>
+                </div>
+            }
+
+            <div class="form-group">
+                <label asp-for="ImageFile">@(string.IsNullOrEmpty(Model.ImagePath) ? "Product Image (optional)" : "Replace Image (optional)")</label>
+                <input asp-for="ImageFile" class="form-control" type="file" accept=".jpg,.jpeg,.png,.webp" />
+                <span asp-validation-for="ImageFile" class="field-validation-error"></span>
+                <small style="color:var(--neutral-700);">JPG, PNG, or WEBP — up to 5 MB. Leave blank to keep the current image.</small>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ProductName"></label>
+                <input asp-for="ProductName" class="form-control" />
+                <span asp-validation-for="ProductName" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Description"></label>
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Description" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="CategoryId">Category</label>
+                <select asp-for="CategoryId" class="form-control">
+                    @if (categories != null)
+                    {
+                        foreach (var cat in categories)
+                        {
+                            <option value="@cat.CategoryId" selected="@(cat.CategoryId == Model.CategoryId)">@cat.Name</option>
+                        }
+                    }
+                </select>
+                <span asp-validation-for="CategoryId" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Price">Price (ZAR)</label>
+                <input asp-for="Price" class="form-control" type="number" step="0.01" min="0.01" />
+                <span asp-validation-for="Price" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="StockQuantity"></label>
+                <input asp-for="StockQuantity" class="form-control" type="number" min="0" />
+                <span asp-validation-for="StockQuantity" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-check">
+                <input asp-for="IsActive" type="checkbox" id="IsActive" />
+                <label for="IsActive" style="font-weight:400; margin:0;">Active (visible to customers)</label>
+            </div>
+
+            <button type="submit" class="btn-submit">Save Changes</button>
+        </form>
+
+        <div class="auth-links">
+            <a asp-action="MyProducts">&larr; Back to My Products</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

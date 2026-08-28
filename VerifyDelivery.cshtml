@@ -1,0 +1,43 @@
+@model Order
+@{
+    ViewData["Title"] = "Confirm Delivery";
+}
+
+<div class="container">
+    <div class="auth-wrap wide">
+        <h2>Confirm Delivery — Order #@Model.OrderId</h2>
+        <p class="subtitle">
+            Ask the customer for the one-time delivery code sent to their email, then enter it below
+            to mark this order as delivered.
+        </p>
+
+        <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+        <div class="product-card" style="margin-bottom:1.2rem;">
+            <div class="product-card-body">
+                <p style="font-size:0.9rem; margin:0.2rem 0;"><strong>Customer:</strong> @Model.Customer?.FullName</p>
+                <p style="font-size:0.9rem; margin:0.2rem 0;"><strong>Deliver to:</strong> @Model.DeliveryAddress</p>
+                <ul style="font-size:0.9rem; margin:0.4rem 0; padding-left:1.1rem;">
+                    @foreach (var item in Model.OrderItems.Where(i => i.Product != null))
+                    {
+                        <li>@item.Product!.ProductName &times; @item.Quantity</li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+        <form asp-action="VerifyDelivery" asp-route-orderId="@Model.OrderId" method="post" novalidate>
+            @Html.AntiForgeryToken()
+            <div class="form-group">
+                <label for="code">One-Time Delivery Code</label>
+                <input type="text" id="code" name="code" class="form-control otp-input"
+                       maxlength="6" inputmode="numeric" pattern="[0-9]{6}" placeholder="000000" autocomplete="off" />
+            </div>
+            <button type="submit" class="btn-submit">Confirm Delivery</button>
+        </form>
+
+        <div class="auth-links">
+            <a asp-action="ManageOrders">&larr; Back to Manage Orders</a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,51 @@
+@model List<Product>
+@{
+    ViewData["Title"] = "My Products";
+}
+
+<div class="container">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem;">
+        <h2 class="section-title" style="margin:0;">My Products</h2>
+        <a asp-action="Create" class="btn-nav" style="background:var(--brand-primary); color:#fff !important;">+ Add Product</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">You haven't added any products yet. Click "Add Product" to get started.</div>
+    }
+    else
+    {
+        <div class="card-grid">
+            @foreach (var product in Model)
+            {
+                <div class="product-card">
+                    <div class="product-card-media">
+                        @if (!string.IsNullOrEmpty(product.ImagePath))
+                        {
+                            <img src="@product.ImagePath" alt="@product.ProductName" class="product-image" />
+                        }
+                        else
+                        {
+                            <div class="cat-icon @product.Category?.IconClass">
+                                @(product.Category?.Name.Substring(0, 1) ?? "P")
+                            </div>
+                        }
+                    </div>
+                    <div class="product-card-body">
+                        <span class="category-tag">@product.Category?.Name @(product.IsActive ? "" : "• Inactive")</span>
+                        <h3>@product.ProductName</h3>
+                        <div class="price">R@(product.Price.ToString("0.00")) &middot; Stock: @product.StockQuantity</div>
+                        <div style="display:flex; gap:0.8rem; margin-top:0.5rem;">
+                            <a asp-action="Edit" asp-route-id="@product.ProductId">Edit</a>
+                            <form asp-action="Delete" asp-route-id="@product.ProductId" method="post"
+                                  onsubmit="return confirm('Delete this product? This cannot be undone.');" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" style="background:none; border:none; color:var(--danger); cursor:pointer; padding:0; font-size:0.92rem;">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

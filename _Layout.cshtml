@@ -1,0 +1,123 @@
+@using Microsoft.AspNetCore.Identity
+@using VendorShopOnline.Models
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - VendorShop Online</title>
+    <link rel="icon" href="~/images/dut-logo.jpg" type="image/jpeg" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="header-inner">
+            <div class="brand-block">
+                <a asp-controller="Home" asp-action="Index" aria-label="VendorShop Online home">
+                    <img src="~/images/dut-logo.jpg"
+                         alt="Durban University of Technology, Faculty of Accounting and Informatics logo"
+                         class="dut-logo" />
+                </a>
+                <a asp-controller="Home" asp-action="Index" style="text-decoration:none;">
+                    <span class="brand-name">
+                        VendorShop Online
+                        <small>Marketplace for Vendors &amp; Customers</small>
+                    </span>
+                </a>
+            </div>
+
+            <button type="button" class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">&#9776; Menu</button>
+
+            <nav class="main-nav" aria-label="Main navigation">
+                <a asp-controller="Home" asp-action="Index">Home</a>
+                <a asp-controller="Product" asp-action="Index">Products</a>
+
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    if (User.IsInRole(RoleNames.Vendor))
+                    {
+                        <a asp-controller="Vendor" asp-action="Dashboard">My Dashboard</a>
+                        <a asp-controller="VendorOrder" asp-action="ManageOrders">Manage Orders</a>
+                        <a asp-controller="Report" asp-action="OrderedProducts">Reports</a>
+                    }
+                    else if (User.IsInRole(RoleNames.Customer))
+                    {
+                        <a asp-controller="Customer" asp-action="Dashboard">My Account</a>
+                        <a asp-controller="Order" asp-action="MyOrders">My Orders</a>
+                    }
+                    else if (User.IsInRole(RoleNames.Administrator))
+                    {
+                        <a asp-controller="Report" asp-action="OrderedProducts">Reports</a>
+                    }
+                    <span class="nav-user">Hi, @(User.Identity?.Name)</span>
+                    <form asp-controller="Account" asp-action="Logout" method="post" style="display:inline;">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn-nav">Log Out</button>
+                    </form>
+                }
+                else
+                {
+                    <a asp-controller="Account" asp-action="Login">Log In</a>
+                    <a asp-controller="Account" asp-action="RegisterCustomer" class="btn-nav">Register</a>
+                }
+            </nav>
+        </div>
+    </header>
+
+    @{
+        string? roleLabel = null;
+        if (SignInManager.IsSignedIn(User))
+        {
+            if (User.IsInRole(RoleNames.Vendor)) { roleLabel = "Vendor"; }
+            else if (User.IsInRole(RoleNames.Customer)) { roleLabel = "Customer"; }
+            else if (User.IsInRole(RoleNames.Administrator)) { roleLabel = "Administrator"; }
+        }
+    }
+    <div class="welcome-banner">
+        <div class="container">
+            @if (roleLabel != null)
+            {
+                <h1>Welcome to VendorShop Online, @(User.Identity?.Name?.Split('@')[0])
+                    <span class="role-badge">@roleLabel</span>
+                </h1>
+                <p>Great to have you back on the marketplace.</p>
+            }
+            else
+            {
+                <h1>Welcome to VendorShop Online</h1>
+                <p>South Africa's marketplace connecting trusted local vendors with everyday customers.</p>
+            }
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="container" style="padding-top:1rem;">
+            <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="container" style="padding-top:1rem;">
+            <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+        </div>
+    }
+
+    <main class="content-wrap">
+        @RenderBody()
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <span>&copy; @DateTime.Now.Year VendorShop Online — APDP201 Web Application Project</span>
+            <span>Durban University of Technology, Faculty of Accounting &amp; Informatics</span>
+        </div>
+    </footer>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

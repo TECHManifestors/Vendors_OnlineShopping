@@ -1,0 +1,80 @@
+@model List<Order>
+@{
+    ViewData["Title"] = "Manage Orders";
+}
+
+<div class="container">
+    <h2 class="section-title">Manage Orders</h2>
+    <p class="subtitle">Orders containing at least one of your products, once payment has been confirmed.</p>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">No paid orders for your products yet.</div>
+    }
+    else
+    {
+        @foreach (var order in Model)
+        {
+            <div class="product-card" style="margin-bottom:1rem;">
+                <div class="product-card-body">
+                    <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.4rem;">
+                        <h3 style="margin:0;">Order #@order.OrderId</h3>
+                        <span class="tracking-status-badge">@order.TrackingLabel</span>
+                    </div>
+                    <p style="font-size:0.85rem; color:var(--neutral-700); margin:0.3rem 0;">
+                        Placed @order.OrderDate.ToLocalTime().ToString("dd MMM yyyy, HH:mm")
+                        &middot; Customer: @order.Customer?.FullName
+                        &middot; Deliver to: @order.DeliveryAddress
+                    </p>
+                    <ul style="font-size:0.9rem; margin:0.4rem 0; padding-left:1.1rem;">
+                        @foreach (var item in order.OrderItems.Where(i => i.Product != null))
+                        {
+                            <li>@item.Product!.ProductName &times; @item.Quantity — R@(item.UnitPrice.ToString("0.00")) each</li>
+                        }
+                    </ul>
+
+                    <div style="display:flex; gap:0.6rem; flex-wrap:wrap; margin-top:0.6rem;">
+                        @if (order.Status == OrderStatus.Confirmed)
+                        {
+                            <form asp-controller="VendorOrder" asp-action="UpdateStatus" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="orderId" value="@order.OrderId" />
+                                <input type="hidden" name="newStatus" value="@OrderStatus.Shipped" />
+                                <button type="submit" class="btn-nav" style="background:var(--brand-primary); color:#fff !important;">Mark as Shipped</button>
+                            </form>
+                        }
+
+                        @if (order.Status == OrderStatus.Shipped)
+                        {
+                            <form asp-controller="VendorOrder" asp-action="UpdateStatus" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="orderId" value="@order.OrderId" />
+                                <input type="hidden" name="newStatus" value="@OrderStatus.InTransit" />
+                                <button type="submit" class="btn-nav" style="background:var(--brand-accent); color:#1c2a2a !important;">Mark Out for Delivery (sends OTP)</button>
+                            </form>
+                        }
+
+                        @if (order.Status == OrderStatus.InTransit)
+                        {
+                            <a asp-controller="VendorOrder" asp-action="VerifyDelivery" asp-route-orderId="@order.OrderId"
+                               class="btn-nav" style="background:var(--success); color:#fff !important; text-decoration:none;">
+                                Confirm Delivery (enter OTP)
+                            </a>
+
+                            <form asp-controller="VendorOrder" asp-action="ResendOtp" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="orderId" value="@order.OrderId" />
+                                <button type="submit" class="btn-nav" style="background:var(--neutral-300); color:#1c2a2a !important;">Resend OTP</button>
+                            </form>
+                        }
+
+                        @if (order.Status == OrderStatus.Delivered)
+                        {
+                            <span style="color:var(--success); font-weight:700; align-self:center;">Delivered &check;</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>

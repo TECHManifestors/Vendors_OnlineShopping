@@ -1,0 +1,110 @@
+@model PaymentViewModel
+@{
+    ViewData["Title"] = "Checkout";
+    var order = ViewBag.Order as Order;
+}
+
+<div class="container">
+    <div class="auth-wrap wide">
+        <h2>Checkout</h2>
+        <p class="subtitle">Order #@Model.OrderId &middot; Total due: <strong>R@(Model.AmountDue.ToString("0.00"))</strong></p>
+
+        @if (order != null)
+        {
+            <ul style="font-size:0.9rem; margin:0 0 1.4rem; padding-left:1.1rem; color:var(--neutral-700);">
+                @foreach (var item in order.OrderItems)
+                {
+                    <li>@item.Product?.ProductName &times; @item.Quantity — R@(item.UnitPrice.ToString("0.00")) each</li>
+                }
+            </ul>
+        }
+
+        <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+        <form asp-action="Checkout" method="post" novalidate id="paymentForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="OrderId" />
+            <input type="hidden" asp-for="AmountDue" />
+
+            <div class="form-group">
+                <label asp-for="Method">Payment Method</label>
+                <select asp-for="Method" class="form-control" id="paymentMethod">
+                    <option value="">-- Select a payment method --</option>
+                    <option value="@PaymentMethod.BankEft">Bank / EFT</option>
+                    <option value="@PaymentMethod.DebitCard">Debit Card</option>
+                    <option value="@PaymentMethod.CreditCard">Credit Card</option>
+                </select>
+                <span asp-validation-for="Method" class="field-validation-error"></span>
+            </div>
+
+            <div id="bankFields" style="display:none;">
+                <div class="form-group">
+                    <label asp-for="Bank">Select Your Bank</label>
+                    <select asp-for="Bank" class="form-control">
+                        <option value="">-- Select your bank --</option>
+                        <option value="@SouthAfricanBank.Absa">Absa Bank</option>
+                        <option value="@SouthAfricanBank.Capitec">Capitec Bank</option>
+                        <option value="@SouthAfricanBank.Fnb">First National Bank (FNB)</option>
+                        <option value="@SouthAfricanBank.Nedbank">Nedbank</option>
+                        <option value="@SouthAfricanBank.StandardBank">Standard Bank</option>
+                        <option value="@SouthAfricanBank.TymeBank">TymeBank</option>
+                        <option value="@SouthAfricanBank.DiscoveryBank">Discovery Bank</option>
+                        <option value="@SouthAfricanBank.AfricanBank">African Bank</option>
+                    </select>
+                    <span asp-validation-for="Bank" class="field-validation-error"></span>
+                    <p style="font-size:0.78rem; color:var(--neutral-700); margin-top:0.4rem;">
+                        You'll be shown VendorShop Online's banking details and a unique payment
+                        reference after confirming — settle the EFT from your @("bank's")
+                        app or online banking using that reference.
+                    </p>
+                </div>
+            </div>
+
+            <div id="cardFields" style="display:none;">
+                <div class="form-group">
+                    <label asp-for="CardNumber"></label>
+                    <input asp-for="CardNumber" class="form-control" placeholder="4111 1111 1111 1111" autocomplete="cc-number" />
+                    <span asp-validation-for="CardNumber" class="field-validation-error"></span>
+                </div>
+                <div style="display:flex; gap:1rem;">
+                    <div class="form-group" style="flex:1;">
+                        <label asp-for="CardExpiry"></label>
+                        <input asp-for="CardExpiry" class="form-control" placeholder="MM/YY" autocomplete="cc-exp" />
+                        <span asp-validation-for="CardExpiry" class="field-validation-error"></span>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label asp-for="CardCvv"></label>
+                        <input asp-for="CardCvv" class="form-control" placeholder="123" autocomplete="cc-csc" />
+                        <span asp-validation-for="CardCvv" class="field-validation-error"></span>
+                    </div>
+                </div>
+                <p style="font-size:0.78rem; color:var(--neutral-700); margin-top:-0.6rem;">
+                    Card details are used only to confirm this simulated transaction and are not
+                    stored — only the last 4 digits are retained on your order record for reference.
+                </p>
+            </div>
+
+            <button type="submit" class="btn-submit">Pay R@(Model.AmountDue.ToString("0.00"))</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            var methodSelect = document.getElementById('paymentMethod');
+            var bankFields = document.getElementById('bankFields');
+            var cardFields = document.getElementById('cardFields');
+
+            function toggleFields() {
+                var val = methodSelect.value;
+                bankFields.style.display = (val === '@PaymentMethod.BankEft') ? 'block' : 'none';
+                cardFields.style.display = (val === '@PaymentMethod.DebitCard' || val === '@PaymentMethod.CreditCard') ? 'block' : 'none';
+            }
+
+            methodSelect.addEventListener('change', toggleFields);
+            toggleFields();
+        })();
+    </script>
+}

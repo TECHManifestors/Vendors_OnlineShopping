@@ -1,0 +1,38 @@
+@model Customer
+@{
+    ViewData["Title"] = "My Account";
+}
+
+<div class="container">
+    <h2 class="section-title">My Account</h2>
+
+    <div class="card-grid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));">
+        <div class="product-card">
+            <div class="product-card-body">
+                <h3>Account Details</h3>
+                <p style="font-size:0.9rem; color:var(--neutral-700); margin:0.2rem 0;"><strong>@Model.FullName</strong></p>
+                <p style="font-size:0.85rem; color:var(--neutral-700); margin:0.2rem 0;">@Model.Email</p>
+                <p style="font-size:0.85rem; color:var(--neutral-700); margin:0.2rem 0;">@Model.PhoneNumber</p>
+                <p style="font-size:0.85rem; color:var(--neutral-700); margin:0.2rem 0;">@Model.DeliveryAddress</p>
+            </div>
+        </div>
+
+        <div class="product-card">
+            <div class="product-card-body">
+                <h3>Order History</h3>
+                <div class="price" style="font-size:1.8rem;">@Model.Orders.Count</div>
+                <p style="font-size:0.85rem; color:var(--neutral-700);">
+                    @(Model.Orders.Count == 0 ? "No orders yet." : "orders placed so far.")
+                </p>
+            </div>
+        </div>
+
+        <div class="product-card">
+            <div class="product-card-body">
+                <h3>Start Shopping</h3>
+                <p style="font-size:0.85rem; color:var(--neutral-700);">Browse the marketplace for groceries and essentials.</p>
+                <a asp-controller="Product" asp-action="Index" class="btn-nav" style="background:var(--brand-primary); color:#fff !important; display:inline-block; margin-top:0.4rem;">Browse Products</a>
+            </div>
+        </div>
+    </div>
+</div>

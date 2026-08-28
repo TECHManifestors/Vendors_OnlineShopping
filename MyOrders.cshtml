@@ -1,0 +1,55 @@
+@model List<Order>
+@{
+    ViewData["Title"] = "My Orders";
+}
+
+<div class="container">
+    <h2 class="section-title">My Orders</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">You haven't placed any orders yet.</div>
+    }
+    else
+    {
+        @foreach (var order in Model)
+        {
+            <div class="product-card" style="margin-bottom:1rem;">
+                <div class="product-card-body">
+                    <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.4rem;">
+                        <h3 style="margin:0;">Order #@order.OrderId</h3>
+                        <span class="category-tag" style="color:@(order.IsPaid ? "var(--success)" : "var(--danger)");">
+                            @(order.IsPaid ? "PAID" : "UNPAID") &middot; @order.Status
+                        </span>
+                    </div>
+                    <p style="font-size:0.85rem; color:var(--neutral-700); margin:0.3rem 0;">
+                        Placed @order.OrderDate.ToLocalTime().ToString("dd MMM yyyy, HH:mm")
+                    </p>
+                    <ul style="font-size:0.9rem; margin:0.4rem 0; padding-left:1.1rem;">
+                        @foreach (var item in order.OrderItems)
+                        {
+                            <li>@item.Product?.ProductName &times; @item.Quantity — R@(item.UnitPrice.ToString("0.00")) each</li>
+                        }
+                    </ul>
+                    <div class="price">Total: R@(order.TotalAmount.ToString("0.00"))</div>
+                    <div style="display:flex; gap:0.8rem; margin-top:0.5rem; flex-wrap:wrap;">
+                        @if (!order.IsPaid)
+                        {
+                            <a asp-controller="Payment" asp-action="Checkout" asp-route-orderId="@order.OrderId"
+                               class="btn-nav" style="background:var(--brand-accent); color:#1c2a2a !important; display:inline-block;">
+                                Complete Payment
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-action="Track" asp-route-orderId="@order.OrderId"
+                               class="btn-nav" style="background:var(--brand-primary); color:#fff !important; display:inline-block;">
+                                Track Order
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>

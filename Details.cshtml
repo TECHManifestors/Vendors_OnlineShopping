@@ -1,0 +1,54 @@
+@model Product
+@{
+    ViewData["Title"] = Model.ProductName;
+}
+
+<div class="container">
+    <div class="auth-wrap wide">
+        @if (!string.IsNullOrEmpty(Model.ImagePath))
+        {
+            <img src="@Model.ImagePath" alt="@Model.ProductName" style="width:100%; max-width:320px; max-height:320px; object-fit:cover; border-radius:var(--radius); box-shadow:var(--shadow-sm); margin-bottom:1rem;" />
+        }
+        else
+        {
+            <div class="cat-icon @Model.Category?.IconClass" style="width:80px;height:80px;font-size:2.2rem;margin-bottom:1rem;">
+                @(Model.Category?.Name.Substring(0, 1) ?? "P")
+            </div>
+        }
+        <span class="category-tag">@Model.Category?.Name</span>
+        <h2 style="margin-top:0.3rem;">@Model.ProductName</h2>
+        <p style="color:var(--neutral-700);">Sold by <strong>@Model.Vendor?.BusinessName</strong></p>
+        <div class="price" style="font-size:1.4rem;">R@(Model.Price.ToString("0.00"))</div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.Description))
+        {
+            <p>@Model.Description</p>
+        }
+
+        <p style="font-size:0.85rem; color:var(--neutral-700);">
+            @(Model.StockQuantity > 0 ? $"{Model.StockQuantity} in stock" : "Currently out of stock")
+        </p>
+
+        @if (Model.StockQuantity > 0)
+        {
+            @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole(RoleNames.Customer))
+            {
+                <a asp-controller="Order" asp-action="Buy" asp-route-productId="@Model.ProductId"
+                   class="btn-submit" style="display:inline-block; width:auto; padding:0.7rem 1.6rem; text-decoration:none;">
+                    Buy Now
+                </a>
+            }
+            else if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Url.Action("Details", "Product", new { id = Model.ProductId })"
+                   class="btn-submit" style="display:inline-block; width:auto; padding:0.7rem 1.6rem; text-decoration:none;">
+                    Log In to Buy
+                </a>
+            }
+        }
+
+        <div class="auth-links">
+            <a asp-action="Index">&larr; Back to Products</a>
+        </div>
+    </div>
+</div>

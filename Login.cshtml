@@ -1,0 +1,45 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Log In";
+}
+
+<div class="container">
+    <div class="auth-wrap">
+        <h2>Log In</h2>
+        <p class="subtitle">Welcome back to VendorShop Online.</p>
+
+        <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+        <form asp-controller="Account" asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" novalidate>
+            @Html.AntiForgeryToken()
+
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" autocomplete="email" />
+                <span asp-validation-for="Email" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password"></label>
+                <input asp-for="Password" class="form-control" autocomplete="current-password" />
+                <span asp-validation-for="Password" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-check">
+                <input asp-for="RememberMe" type="checkbox" id="RememberMe" />
+                <label for="RememberMe" style="font-weight:400; margin:0;">Remember me</label>
+            </div>
+
+            <button type="submit" class="btn-submit">Log In</button>
+        </form>
+
+        <div class="auth-links">
+            <a asp-controller="Account" asp-action="ForgotPassword">Forgot your password?</a>
+            <span>New to VendorShop? <a asp-controller="Account" asp-action="RegisterCustomer">Register as Customer</a> or <a asp-controller="Account" asp-action="RegisterVendor">Vendor</a></span>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

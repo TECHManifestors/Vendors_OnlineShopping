@@ -1,0 +1,64 @@
+@model CustomerRegisterViewModel
+@{
+    ViewData["Title"] = "Customer Registration";
+}
+
+<div class="container">
+    <div class="auth-wrap wide">
+        <h2>Create your Customer Account</h2>
+        <p class="subtitle">Register to browse products and place orders on VendorShop Online.</p>
+
+        <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+        <form asp-controller="Account" asp-action="RegisterCustomer" method="post" novalidate>
+            @Html.AntiForgeryToken()
+
+            <div class="form-group">
+                <label asp-for="FullName"></label>
+                <input asp-for="FullName" class="form-control" autocomplete="name" placeholder="e.g. Thandiwe Nkosi" />
+                <span asp-validation-for="FullName" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" autocomplete="email" placeholder="you@example.com" />
+                <span asp-validation-for="Email" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PhoneNumber"></label>
+                <input asp-for="PhoneNumber" class="form-control" autocomplete="tel" placeholder="0821234567" />
+                <span asp-validation-for="PhoneNumber" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="DeliveryAddress"></label>
+                <input asp-for="DeliveryAddress" class="form-control" autocomplete="street-address" placeholder="Street, Suburb, City, Postal Code" />
+                <span asp-validation-for="DeliveryAddress" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password"></label>
+                <input asp-for="Password" class="form-control" autocomplete="new-password" />
+                <span asp-validation-for="Password" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ConfirmPassword"></label>
+                <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password" />
+                <span asp-validation-for="ConfirmPassword" class="field-validation-error"></span>
+            </div>
+
+            <button type="submit" class="btn-submit">Create Account</button>
+        </form>
+
+        <div class="auth-links">
+            <span>Already have an account? <a asp-controller="Account" asp-action="Login">Log in</a></span>
+            <a asp-controller="Account" asp-action="RegisterVendor">Register as a Vendor instead</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

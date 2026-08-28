@@ -1,0 +1,97 @@
+@model Order
+@{
+    ViewData["Title"] = $"Track Order #{Model.OrderId}";
+
+    var milestones = new[] { "Processing", "Shipped", "In Transit", "Delivered" };
+}
+
+<div class="container">
+    <div class="auth-wrap wide">
+        <h2 style="margin-bottom:0.2rem;">Track Order #@Model.OrderId</h2>
+        <p class="subtitle">Placed @Model.OrderDate.ToLocalTime().ToString("dd MMM yyyy, HH:mm")</p>
+
+        <span class="tracking-status-badge">@Model.TrackingLabel</span>
+
+        @if (Model.Status == OrderStatus.Cancelled)
+        {
+            <div class="alert alert-danger" style="margin-top:1rem;">This order has been cancelled.</div>
+        }
+        else
+        {
+            <ol class="tracking-timeline" style="margin-top:1.2rem;">
+                @for (int i = 0; i < milestones.Length; i++)
+                {
+                    var reached = i <= Model.TrackingStageIndex;
+                    var eventAtStage = Model.TrackingEvents
+                        .Where(e => MapStatusToStage(e.Status) == i)
+                        .OrderByDescending(e => e.Timestamp)
+                        .FirstOrDefault();
+
+                    <li class="@(reached ? "reached" : "")">
+                        <span class="step-label">@milestones[i]</span>
+                        @if (eventAtStage != null)
+                        {
+                            <span class="step-time">@eventAtStage.Timestamp.ToLocalTime().ToString("dd MMM yyyy, HH:mm")</span>
+                            @if (!string.IsNullOrEmpty(eventAtStage.Notes))
+                            {
+                                <span class="step-time">@eventAtStage.Notes</span>
+                            }
+                        }
+                        else if (reached)
+                        {
+                            <span class="step-time">Completed</span>
+                        }
+                        else
+                        {
+                            <span class="step-time">Pending</span>
+                        }
+                    </li>
+                }
+            </ol>
+        }
+
+        @if (Model.EstimatedDeliveryDate.HasValue)
+        {
+            <div class="alert alert-info">
+                Estimated delivery: <strong>@Model.EstimatedDeliveryDate.Value.ToLocalTime().ToString("dd MMM yyyy")</strong>
+            </div>
+        }
+
+        <h3 style="margin-top:1.5rem;">Order Contents</h3>
+        <ul style="font-size:0.9rem; margin:0.4rem 0; padding-left:1.1rem;">
+            @foreach (var item in Model.OrderItems)
+            {
+                <li>@item.Product?.ProductName &times; @item.Quantity — R@(item.UnitPrice.ToString("0.00")) each</li>
+            }
+        </ul>
+        <div class="price">Total: R@(Model.TotalAmount.ToString("0.00"))</div>
+
+        @if (Model.Status == OrderStatus.InTransit)
+        {
+            <div class="alert alert-info" style="margin-top:1rem;">
+                Your order is on its way. Please have the one-time delivery code we emailed you ready
+                for the courier — it confirms you received your order.
+            </div>
+        }
+
+        <div class="auth-links">
+            <a asp-action="MyOrders">&larr; Back to My Orders</a>
+        </div>
+    </div>
+</div>
+
+@functions {
+    // Same stage mapping as Order.TrackingStageIndex, applied to a raw
+    // OrderStatus value from a tracking event so each timeline entry lines
+    // up under the correct milestone.
+    private int MapStatusToStage(OrderStatus status) => status switch
+    {
+        OrderStatus.Pending => 0,
+        OrderStatus.Confirmed => 0,
+        OrderStatus.Shipped => 1,
+        OrderStatus.InTransit => 2,
+        OrderStatus.Delivered => 3,
+        OrderStatus.Cancelled => -1,
+        _ => 0
+    };
+}

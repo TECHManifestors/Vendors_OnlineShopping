@@ -1,0 +1,50 @@
+@model Order
+@{
+    ViewData["Title"] = "Order Confirmation";
+    var payment = Model.Payments.OrderByDescending(p => p.PaymentDate).FirstOrDefault();
+}
+
+<div class="container">
+    <div class="auth-wrap wide">
+        <h2>Thank You — Order Confirmed</h2>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+        }
+
+        <div class="product-card">
+            <div class="product-card-body">
+                <h3>Order #@Model.OrderId</h3>
+                <p style="font-size:0.85rem; color:var(--neutral-700);">
+                    Status: <strong>@Model.Status</strong> &middot; Delivering to: @Model.DeliveryAddress
+                </p>
+
+                <ul style="font-size:0.9rem; margin:0.6rem 0; padding-left:1.1rem;">
+                    @foreach (var item in Model.OrderItems)
+                    {
+                        <li>@item.Product?.ProductName &times; @item.Quantity — R@(item.UnitPrice.ToString("0.00")) each</li>
+                    }
+                </ul>
+
+                <div class="price" style="font-size:1.3rem;">Total Paid: R@(Model.TotalAmount.ToString("0.00"))</div>
+
+                @if (payment != null)
+                {
+                    <hr style="border:none; border-top:1px solid var(--neutral-300); margin:1rem 0;" />
+                    <p style="font-size:0.85rem; margin:0.2rem 0;"><strong>Payment Reference:</strong> @payment.ReferenceNumber</p>
+                    <p style="font-size:0.85rem; margin:0.2rem 0;"><strong>Method:</strong> @payment.Method
+                        @if (payment.Bank.HasValue) { <text> (@payment.Bank)</text> }
+                        @if (!string.IsNullOrEmpty(payment.CardLast4Digits)) { <text> (ending @payment.CardLast4Digits)</text> }
+                    </p>
+                    <p style="font-size:0.85rem; margin:0.2rem 0;"><strong>Status:</strong> @payment.Status</p>
+                }
+            </div>
+        </div>
+
+        <div class="auth-links">
+            <a asp-controller="Order" asp-action="MyOrders">View All My Orders</a>
+            <a asp-controller="Product" asp-action="Index">Continue Shopping</a>
+        </div>
+    </div>
+</div>
