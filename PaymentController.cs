@@ -115,17 +115,6 @@ namespace VendorShopOnline.Controllers
                 }
             }
 
-            // Order-tracking feature: record this as the first entry on the
-            // order's tracking timeline. Purely additive — does not change
-            // the existing payment/order/stock logic above in any way.
-            _context.OrderTrackingEvents.Add(new OrderTrackingEvent
-            {
-                OrderId = order.OrderId,
-                Status = OrderStatus.Confirmed,
-                Timestamp = DateTime.UtcNow,
-                Notes = "Payment received. Your order is being processed."
-            });
-
             await _context.SaveChangesAsync();
 
             _logger.LogInformation("Payment {Reference} recorded for Order {OrderId} via {Method}.",

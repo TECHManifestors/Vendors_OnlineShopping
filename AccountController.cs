@@ -261,13 +261,17 @@ namespace VendorShopOnline.Controllers
                 values: new { email = user.Email, token = encodedToken },
                 protocol: Request.Scheme);
 
-            var greetingName = string.IsNullOrWhiteSpace(user.FullName) ? "there" : user.FullName;
             var htmlMessage = $@"
-                <p>Hello {greetingName},</p>
-                <p>We received a request to reset your VendorShop Online password.</p>
-                <p><a href='{HtmlEncoder.Default.Encode(callbackUrl ?? string.Empty)}'>Click here to reset your password</a></p>
-                <p>This link will expire in 2 hours. If you did not request this, you can safely ignore this email.</p>";
-
+<p>Hello {user.FullName ?? "there"}</p>
+<p>We received a request to reset your VendorShop Online password.</p>
+<p>
+<a href='{callbackUrl}'>
+Click here to reset your password
+</a>
+</p>
+<p>
+This link will expire in 2 hours. If you did not request this, you can safely ignore this email.
+</p>";
             try
             {
                 await _emailSender.SendEmailAsync(user.Email!, "VendorShop Online - Password Reset", htmlMessage);

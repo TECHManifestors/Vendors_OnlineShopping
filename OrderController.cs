@@ -99,30 +99,6 @@ namespace VendorShopOnline.Controllers
             return View(orders);
         }
 
-        /// <summary>
-        /// Customer order-tracking page: status, product details, delivery
-        /// timeline, and estimated delivery date for a single order. New
-        /// action on the existing Customer-only OrderController — it does
-        /// not change Buy or MyOrders in any way.
-        /// </summary>
-        [HttpGet]
-        public async Task<IActionResult> Track(int orderId)
-        {
-            var customer = await GetCurrentCustomerAsync();
-            if (customer == null) return Forbid();
-
-            var order = await _context.Orders
-                .Include(o => o.OrderItems).ThenInclude(oi => oi.Product)
-                .Include(o => o.TrackingEvents)
-                .FirstOrDefaultAsync(o => o.OrderId == orderId && o.CustomerId == customer.CustomerId);
-
-            if (order == null) return NotFound();
-
-            order.TrackingEvents = order.TrackingEvents.OrderBy(e => e.Timestamp).ToList();
-
-            return View(order);
-        }
-
         private async Task<Customer?> GetCurrentCustomerAsync()
         {
             var userId = _userManager.GetUserId(User);
