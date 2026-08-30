@@ -131,34 +131,6 @@ at the point this demo simulates a completed payment. This scope and
 reasoning is documented in code comments in `Models/Payment.cs` and
 `Controllers/PaymentController.cs`.
 
-## New Features (Sprint Two Enhancements)
-
-Five features were added on top of the original Sprint One system without
-changing any existing behaviour. Full detail, database changes, and testing
-steps are in `FEATURE_SUMMARY.md` at the repository root; short version:
-
-1. **Product Image Upload** — vendors can attach a JPG/PNG/WEBP image
-   (≤5 MB) when creating or editing a product. Falls back to the original
-   category-icon placeholder when no image is set.
-2. **Customer Order Tracking** — `/Order/Track/{orderId}` shows a
-   Processing → Shipped → In Transit → Delivered timeline, order contents,
-   and (if set) an estimated delivery date. Linked from *My Orders*.
-3. **Ordered Products Report** — `/Report/OrderedProducts` (Vendor/
-   Administrator only) with date range, product, vendor (admin), and status
-   filters; shows per-product sales totals and a customer-orders summary.
-4. **Delivery OTP Verification** — when a vendor marks an order "out for
-   delivery" a 6-digit one-time code is emailed to the customer (via the
-   existing email pipeline); the vendor enters it at `/VendorOrder/
-   VerifyDelivery/{orderId}` to mark the order Delivered. Codes are hashed,
-   expire after 15 minutes, and lock out after 5 incorrect attempts.
-5. **Product Search** — the Products page now has a search box matching
-   product name, description, category, and vendor, combinable with the
-   existing category filter.
-
-Because Migrations/ is not committed (see "First-Time Setup" above), running
-`dotnet ef migrations add <Name>` after pulling these changes will pick up
-all of the new columns/tables automatically — no manual SQL is required.
-
 ## Database Architecture Summary
 
 ```

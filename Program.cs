@@ -65,13 +65,6 @@ else
     builder.Services.AddTransient<IEmailSender, LoggingEmailSender>();
 }
 
-// ---------------- New feature services ----------------
-// Product image upload (local disk storage under wwwroot/images/products)
-// and delivery OTP generation/verification. Registered the same way as
-// the existing IEmailSender abstraction just above.
-builder.Services.AddScoped<IProductImageService,LocalProductImageService>();
-builder.Services.AddScoped<IDeliveryOtpService,DeliveryOtpService>();
-
 // ---------------- MVC ----------------
 builder.Services.AddControllersWithViews();
 
