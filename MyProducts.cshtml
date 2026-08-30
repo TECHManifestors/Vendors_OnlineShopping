@@ -20,16 +20,9 @@
             {
                 <div class="product-card">
                     <div class="product-card-media">
-                        @if (!string.IsNullOrEmpty(product.ImagePath))
-                        {
-                            <img src="@product.ImagePath" alt="@product.ProductName" class="product-image" />
-                        }
-                        else
-                        {
-                            <div class="cat-icon @product.Category?.IconClass">
-                                @(product.Category?.Name.Substring(0, 1) ?? "P")
-                            </div>
-                        }
+                        <div class="cat-icon @product.Category?.IconClass">
+                            @(product.Category?.Name.Substring(0, 1) ?? "P")
+                        </div>
                     </div>
                     <div class="product-card-body">
                         <span class="category-tag">@product.Category?.Name @(product.IsActive ? "" : "• Inactive")</span>

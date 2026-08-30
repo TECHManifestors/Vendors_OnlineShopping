@@ -10,25 +10,9 @@
 
         <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
 
-        <form asp-action="Edit" asp-route-id="@Model.ProductId" method="post" enctype="multipart/form-data" novalidate>
+        <form asp-action="Edit" asp-route-id="@Model.ProductId" method="post" novalidate>
             @Html.AntiForgeryToken()
             <input type="hidden" asp-for="ProductId" />
-            <input type="hidden" asp-for="ImagePath" />
-
-            @if (!string.IsNullOrEmpty(Model.ImagePath))
-            {
-                <div class="form-group">
-                    <label>Current Image</label>
-                    <div><img src="@Model.ImagePath" alt="@Model.ProductName" style="max-width:160px; max-height:160px; border-radius:var(--radius); box-shadow:var(--shadow-sm); display:block;" /></div>
-                </div>
-            }
-
-            <div class="form-group">
-                <label asp-for="ImageFile">@(string.IsNullOrEmpty(Model.ImagePath) ? "Product Image (optional)" : "Replace Image (optional)")</label>
-                <input asp-for="ImageFile" class="form-control" type="file" accept=".jpg,.jpeg,.png,.webp" />
-                <span asp-validation-for="ImageFile" class="field-validation-error"></span>
-                <small style="color:var(--neutral-700);">JPG, PNG, or WEBP — up to 5 MB. Leave blank to keep the current image.</small>
-            </div>
 
             <div class="form-group">
                 <label asp-for="ProductName"></label>

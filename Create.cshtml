@@ -11,15 +11,8 @@
 
         <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
 
-        <form asp-action="Create" method="post" enctype="multipart/form-data" novalidate>
+        <form asp-action="Create" method="post" novalidate>
             @Html.AntiForgeryToken()
-
-            <div class="form-group">
-                <label asp-for="ImageFile">Product Image (optional)</label>
-                <input asp-for="ImageFile" class="form-control" type="file" accept=".jpg,.jpeg,.png,.webp" />
-                <span asp-validation-for="ImageFile" class="field-validation-error"></span>
-                <small style="color:var(--neutral-700);">JPG, PNG, or WEBP — up to 5 MB.</small>
-            </div>
 
             <div class="form-group">
                 <label asp-for="ProductName"></label>
