@@ -25,8 +25,6 @@ namespace VendorShopOnline.Data
         public DbSet<Order> Orders { get; set; } = null!;
         public DbSet<OrderItem> OrderItems { get; set; } = null!;
         public DbSet<Payment> Payments { get; set; } = null!;
-        public DbSet<OrderTrackingEvent> OrderTrackingEvents { get; set; } = null!;
-        public DbSet<DeliveryOtp> DeliveryOtps { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -106,37 +104,6 @@ namespace VendorShopOnline.Data
             builder.Entity<Payment>()
                 .HasIndex(p => p.ReferenceNumber)
                 .IsUnique();
-
-            // --- OrderTrackingEvent -> Order (many-to-one) ---
-            // New, additive relationship for the customer order-tracking
-            // feature. Does not touch any existing table or relationship.
-            builder.Entity<OrderTrackingEvent>()
-                .HasOne(e => e.Order)
-                .WithMany(o => o.TrackingEvents)
-                .HasForeignKey(e => e.OrderId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            // --- DeliveryOtp -> Order (one-to-one) ---
-            // New, additive relationship for the delivery OTP feature.
-            // One OTP row per order; regenerating overwrites the previous
-            // one rather than accumulating history.
-            builder.Entity<DeliveryOtp>()
-                .HasOne(d => d.Order)
-                .WithOne(o => o.DeliveryOtp)
-                .HasForeignKey<DeliveryOtp>(d => d.OrderId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            // Note: EF Core automatically applies a unique constraint to
-            // the dependent-side foreign key of a one-to-one relationship
-            // (DeliveryOtp.OrderId above), so no separate HasIndex call is
-            // needed here.
-
-            // --- Product search performance ---
-            // Non-unique index to keep the new product-search feature fast
-            // (Contains/LIKE queries on ProductName) as the catalogue grows.
-            // Purely additive — does not change any existing constraint.
-            builder.Entity<Product>()
-                .HasIndex(p => p.ProductName);
 
             // --- Seed data: categories only (no user/product seed data,
             // which keeps the database honestly empty until real
