@@ -1,37 +1,43 @@
-@model Customer
+@model Vendor
 @{
-    ViewData["Title"] = "My Account";
+    ViewData["Title"] = "Vendor Dashboard";
 }
 
 <div class="container">
-    <h2 class="section-title">My Account</h2>
+    <h2 class="section-title">Vendor Dashboard</h2>
+
+    @if (!Model.IsApproved)
+    {
+        <div class="alert alert-info">
+            Your vendor account is pending Administrator approval. You can still add products, but they
+            will only be visible to customers once your account is approved.
+        </div>
+    }
 
     <div class="card-grid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));">
         <div class="product-card">
             <div class="product-card-body">
-                <h3>Account Details</h3>
-                <p style="font-size:0.9rem; color:var(--neutral-700); margin:0.2rem 0;"><strong>@Model.FullName</strong></p>
+                <h3>Business Details</h3>
+                <p style="font-size:0.9rem; color:var(--neutral-700); margin:0.2rem 0;"><strong>@Model.BusinessName</strong></p>
                 <p style="font-size:0.85rem; color:var(--neutral-700); margin:0.2rem 0;">@Model.Email</p>
                 <p style="font-size:0.85rem; color:var(--neutral-700); margin:0.2rem 0;">@Model.PhoneNumber</p>
-                <p style="font-size:0.85rem; color:var(--neutral-700); margin:0.2rem 0;">@Model.DeliveryAddress</p>
+                <p style="font-size:0.85rem; color:var(--neutral-700); margin:0.2rem 0;">@Model.BusinessAddress</p>
             </div>
         </div>
 
         <div class="product-card">
             <div class="product-card-body">
-                <h3>Order History</h3>
-                <div class="price" style="font-size:1.8rem;">@Model.Orders.Count</div>
-                <p style="font-size:0.85rem; color:var(--neutral-700);">
-                    @(Model.Orders.Count == 0 ? "No orders yet." : "orders placed so far.")
-                </p>
+                <h3>Products Listed</h3>
+                <div class="price" style="font-size:1.8rem;">@Model.Products.Count</div>
+                <a asp-controller="Product" asp-action="MyProducts">Manage Products &rarr;</a>
             </div>
         </div>
 
         <div class="product-card">
             <div class="product-card-body">
-                <h3>Start Shopping</h3>
-                <p style="font-size:0.85rem; color:var(--neutral-700);">Browse the marketplace for groceries and essentials.</p>
-                <a asp-controller="Product" asp-action="Index" class="btn-nav" style="background:var(--brand-primary); color:#fff !important; display:inline-block; margin-top:0.4rem;">Browse Products</a>
+                <h3>Quick Action</h3>
+                <p style="font-size:0.85rem; color:var(--neutral-700);">List a new item on the marketplace.</p>
+                <a asp-controller="Product" asp-action="Create" class="btn-nav" style="background:var(--brand-primary); color:#fff !important; display:inline-block; margin-top:0.4rem;">+ Add Product</a>
             </div>
         </div>
     </div>

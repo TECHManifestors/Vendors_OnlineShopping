@@ -8,23 +8,8 @@
 <div class="container">
     <h2 class="section-title">Browse Products</h2>
 
-    <form asp-action="Index" method="get" role="search" style="margin-bottom:1rem; display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
-        @if (selectedId.HasValue)
-        {
-            <input type="hidden" name="categoryId" value="@selectedId" />
-        }
-        <input type="text" name="searchTerm" value="@(ViewBag.SearchTerm as string)"
-               placeholder="Search products, categories, or vendors..."
-               class="form-control" style="max-width:320px; margin:0;" />
-        <button type="submit" class="btn-nav" style="background:var(--brand-primary); color:#fff !important;">Search</button>
-        @if (!string.IsNullOrWhiteSpace(ViewBag.SearchTerm as string))
-        {
-            <a asp-action="Index" asp-route-categoryId="@selectedId" class="btn-nav" style="background:var(--neutral-300); color:#1c2a2a !important;">Clear Search</a>
-        }
-    </form>
-
     <div style="margin-bottom:1.5rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
-        <a asp-action="Index" asp-route-searchTerm="@(ViewBag.SearchTerm as string)"
+        <a asp-action="Index"
            class="btn-nav"
            style="background:@(selectedId == null ? "var(--brand-primary)" : "var(--neutral-300)"); color:@(selectedId == null ? "#fff" : "#1c2a2a") !important;">
             All
@@ -33,7 +18,7 @@
         {
             foreach (var cat in categories)
             {
-                <a asp-action="Index" asp-route-categoryId="@cat.CategoryId" asp-route-searchTerm="@(ViewBag.SearchTerm as string)"
+                <a asp-action="Index" asp-route-categoryId="@cat.CategoryId"
                    class="btn-nav"
                    style="background:@(selectedId == cat.CategoryId ? "var(--brand-primary)" : "var(--neutral-300)"); color:@(selectedId == cat.CategoryId ? "#fff" : "#1c2a2a") !important;">
                     @cat.Name
@@ -44,7 +29,7 @@
 
     @if (!Model.Any())
     {
-        <div class="alert alert-info">No products found. Try a different search term or category.</div>
+        <div class="alert alert-info">No products found in this category yet. Check back soon.</div>
     }
     else
     {
@@ -53,16 +38,9 @@
             {
                 <div class="product-card">
                     <div class="product-card-media">
-                        @if (!string.IsNullOrEmpty(product.ImagePath))
-                        {
-                            <img src="@product.ImagePath" alt="@product.ProductName" class="product-image" />
-                        }
-                        else
-                        {
-                            <div class="cat-icon @product.Category?.IconClass">
-                                @(product.Category?.Name.Substring(0, 1) ?? "P")
-                            </div>
-                        }
+                        <div class="cat-icon @product.Category?.IconClass">
+                            @(product.Category?.Name.Substring(0, 1) ?? "P")
+                        </div>
                     </div>
                     <div class="product-card-body">
                         <span class="category-tag">@product.Category?.Name</span>

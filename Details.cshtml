@@ -5,16 +5,9 @@
 
 <div class="container">
     <div class="auth-wrap wide">
-        @if (!string.IsNullOrEmpty(Model.ImagePath))
-        {
-            <img src="@Model.ImagePath" alt="@Model.ProductName" style="width:100%; max-width:320px; max-height:320px; object-fit:cover; border-radius:var(--radius); box-shadow:var(--shadow-sm); margin-bottom:1rem;" />
-        }
-        else
-        {
-            <div class="cat-icon @Model.Category?.IconClass" style="width:80px;height:80px;font-size:2.2rem;margin-bottom:1rem;">
-                @(Model.Category?.Name.Substring(0, 1) ?? "P")
-            </div>
-        }
+        <div class="cat-icon @Model.Category?.IconClass" style="width:80px;height:80px;font-size:2.2rem;margin-bottom:1rem;">
+            @(Model.Category?.Name.Substring(0, 1) ?? "P")
+        </div>
         <span class="category-tag">@Model.Category?.Name</span>
         <h2 style="margin-top:0.3rem;">@Model.ProductName</h2>
         <p style="color:var(--neutral-700);">Sold by <strong>@Model.Vendor?.BusinessName</strong></p>

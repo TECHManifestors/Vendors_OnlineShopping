@@ -32,22 +32,13 @@
                         }
                     </ul>
                     <div class="price">Total: R@(order.TotalAmount.ToString("0.00"))</div>
-                    <div style="display:flex; gap:0.8rem; margin-top:0.5rem; flex-wrap:wrap;">
-                        @if (!order.IsPaid)
-                        {
-                            <a asp-controller="Payment" asp-action="Checkout" asp-route-orderId="@order.OrderId"
-                               class="btn-nav" style="background:var(--brand-accent); color:#1c2a2a !important; display:inline-block;">
-                                Complete Payment
-                            </a>
-                        }
-                        else
-                        {
-                            <a asp-action="Track" asp-route-orderId="@order.OrderId"
-                               class="btn-nav" style="background:var(--brand-primary); color:#fff !important; display:inline-block;">
-                                Track Order
-                            </a>
-                        }
-                    </div>
+                    @if (!order.IsPaid)
+                    {
+                        <a asp-controller="Payment" asp-action="Checkout" asp-route-orderId="@order.OrderId"
+                           class="btn-nav" style="background:var(--brand-accent); color:#1c2a2a !important; display:inline-block; margin-top:0.5rem;">
+                            Complete Payment
+                        </a>
+                    }
                 </div>
             </div>
         }

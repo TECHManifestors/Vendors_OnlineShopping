@@ -40,17 +40,11 @@
                     if (User.IsInRole(RoleNames.Vendor))
                     {
                         <a asp-controller="Vendor" asp-action="Dashboard">My Dashboard</a>
-                        <a asp-controller="VendorOrder" asp-action="ManageOrders">Manage Orders</a>
-                        <a asp-controller="Report" asp-action="OrderedProducts">Reports</a>
                     }
                     else if (User.IsInRole(RoleNames.Customer))
                     {
                         <a asp-controller="Customer" asp-action="Dashboard">My Account</a>
                         <a asp-controller="Order" asp-action="MyOrders">My Orders</a>
-                    }
-                    else if (User.IsInRole(RoleNames.Administrator))
-                    {
-                        <a asp-controller="Report" asp-action="OrderedProducts">Reports</a>
                     }
                     <span class="nav-user">Hi, @(User.Identity?.Name)</span>
                     <form asp-controller="Account" asp-action="Logout" method="post" style="display:inline;">
